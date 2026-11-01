@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/common/PageHead.astro';
+import { brands } from '../data/brands';
+import { site } from '../config';
+
+const testedCount = brands.filter((b) => b.hasSpeedtestImage).length;
+const iplcCount = brands.filter((b) => b.lineType.includes('专线')).length;
+
+const jsonLd = [
+  {
+    '@type': 'CollectionPage',
+    name: '42家机场品牌全景库与节点测速矩阵',
+    description: '收录42家主流机场服务商套餐价格、IEPL/IPLC专线线路、流媒体与AI解锁状态及节点测速实测数据。',
+    url: new URL('/directory', Astro.site ?? new URL(site.url)).href,
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: new URL('/', Astro.site ?? new URL(site.url)).href },
+      { '@type': 'ListItem', position: 2, name: '42家品牌库', item: new URL('/directory', Astro.site ?? new URL(site.url)).href },
+    ],
+  },
+];
+---
+
+<Base
+  title="42家机场品牌全景库与测速矩阵"
+  description="收录2026年42家主流机场品牌详细参数：涵盖IEPL/IPLC专线、月付/年付价格、优惠码、晚高峰节点测速跑分与ChatGPT/流媒体解锁状态。"
+  jsonLd={jsonLd}
+>
+  <div class="max-w-wide mx-auto px-4 pt-10 sm:pt-16">
+    <PageHead
+      kicker="网络可观测实验室"
+      title="42家机场品牌全景库"
+      lede="全网42家主流机场服务商深度建档。覆盖套餐价格、线路架构、支持协议、晚高峰实测跑分及流媒体解锁实测，拒绝虚假夸大与无根据背书。"
+      folio={`已收录 42 家品牌 · ${testedCount} 家实测跑分 · ${iplcCount} 家专线网络`}
+    />
+
+    {/* 顶部数据总览面板 */}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-10 border-y border-border py-6 font-mono">
+      <div>
+        <p class="text-xs text-muted uppercase">归档品牌总数</p>
+        <p class="text-2xl font-black tabular-nums mt-1 text-primary">42 <span class="text-xs font-normal text-muted">家</span></p>
+      </div>
+      <div>
+        <p class="text-xs text-muted uppercase">具备真实测速图</p>
+        <p class="text-2xl font-black tabular-nums mt-1 text-foreground">{testedCount} <span class="text-xs font-normal text-muted">家 (40.5%)</span></p>
+      </div>
+      <div>
+        <p class="text-xs text-muted uppercase">专线架构覆盖率</p>
+        <p class="text-2xl font-black tabular-nums mt-1 text-foreground">{iplcCount} <span class="text-xs font-normal text-muted">家 (IEPL/IPLC)</span></p>
+      </div>
+      <div>
+        <p class="text-xs text-muted uppercase">最低月均门槛</p>
+        <p class="text-2xl font-black tabular-nums mt-1 text-foreground">¥5.6 <span class="text-xs font-normal text-muted">起/月</span></p>
+      </div>
+    </div>
+
+    {/* 交互式筛选标签栏 */}
+    <div class="mt-10 flex flex-wrap gap-2 items-center text-xs font-mono" id="filter-bar">
+      <span class="text-muted mr-2">快速过滤:</span>
+      <button class="filter-btn active border border-foreground bg-foreground text-background px-3 py-1 font-bold" data-filter="all">
+        全部 (42)
+      </button>
+      <button class="filter-btn border border-border bg-surface text-foreground hover:border-foreground px-3 py-1 transition-colors" data-filter="tested">
+        具备实测跑分 ({testedCount})
+      </button>
+      <button class="filter-btn border border-border bg-surface text-foreground hover:border-foreground px-3 py-1 transition-colors" data-filter="iplc">
+        IEPL/IPLC 专线 ({iplcCount})
+      </button>
+      <button class="filter-btn border border-border bg-surface text-foreground hover:border-foreground px-3 py-1 transition-colors" data-filter="budget">
+        平价入门 (≤¥10/月)
+      </button>
+      <button class="filter-btn border border-border bg-surface text-foreground hover:border-foreground px-3 py-1 transition-colors" data-filter="ai">
+        AI/流媒体全解锁
+      </button>
+    </div>
+
+    {/* 品牌卡片网格 */}
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="brand-grid">
+      {brands.map((brand) => (
+        <article
+          class:list={[
+            'brand-card border border-border bg-surface p-6 flex flex-col justify-between transition-colors',
+            brand.featured && 'border-primary ring-1 ring-primary/20',
+          ]}
+          data-tested={brand.hasSpeedtestImage ? 'true' : 'false'}
+          data-iplc={brand.lineType.includes('专线') ? 'true' : 'false'}
+          data-budget={brand.entryPrice <= 10 ? 'true' : 'false'}
+          data-ai={brand.aiUnlock.includes('ChatGPT') ? 'true' : 'false'}
+        >
+          <div>
+            <div class="flex items-baseline justify-between gap-2 border-b border-border pb-3">
+              <div class="flex items-center gap-2">
+                <span class="font-mono text-xs font-bold text-muted tabular-nums">
+                  #{String(brand.rank).padStart(2, '0')}
+                </span>
+                <h2 class="font-ui text-xl font-extrabold tracking-tight">
+                  {brand.name}
+                </h2>
+              </div>
+              {brand.featured && (
+                <span class="bg-primary text-on-primary font-mono text-[0.625rem] px-1.5 py-0.5 font-bold uppercase">
+                  主推旗舰
+                </span>
+              )}
+            </div>
+
+            <p class="font-mono text-xs text-primary font-bold mt-3">
+              {brand.lineType}
+            </p>
+
+            <p class="text-sm text-foreground/80 mt-2 line-clamp-3 leading-relaxed">
+              {brand.summary}
+            </p>
+
+            {/* 实测数据指标展板 */}
+            {brand.speedtest && (
+              <div class="mt-4 bg-background border border-border p-3 font-mono text-xs grid grid-cols-2 gap-2">
+                <div>
+                  <span class="text-muted block text-[0.625rem]">实测下行带宽</span>
+                  <span class="font-bold text-foreground tabular-nums">{brand.speedtest.speed}</span>
+                </div>
+                <div>
+                  <span class="text-muted block text-[0.625rem]">近端网络延迟</span>
+                  <span class="font-bold text-foreground tabular-nums">{brand.speedtest.latency}</span>
+                </div>
+              </div>
+            )}
+
+            {/* 参数列表 */}
+            <dl class="mt-4 space-y-1.5 font-mono text-xs border-t border-dashed border-border pt-3">
+              <div class="flex justify-between">
+                <dt class="text-muted">入门价格：</dt>
+                <dd class="font-bold text-foreground">{brand.priceStarting}</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-muted">支持协议：</dt>
+                <dd class="text-foreground">{brand.protocols.join(' / ')}</dd>
+              </div>
+              {brand.coupon && (
+                <div class="flex justify-between items-center">
+                  <dt class="text-muted">专属优惠码：</dt>
+                  <dd class="bg-background border border-border px-1.5 py-0.5 font-bold text-primary">
+                    {brand.coupon}
+                  </dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-border flex flex-col gap-2">
+            <a
+              href={brand.affUrl}
+              target="_blank"
+              rel="nofollow sponsored noopener"
+              class="w-full text-center py-2 bg-foreground text-background font-ui text-sm font-bold hover:bg-primary hover:text-on-primary transition-colors no-underline block"
+            >
+              直达 {brand.name} 官网 &rarr;
+            </a>
+            {brand.articleSlug && (
+              <a
+                href={`/reviews/${brand.articleSlug}`}
+                class="w-full text-center py-1.5 border border-border text-foreground hover:border-foreground font-ui text-xs font-medium no-underline block transition-colors"
+              >
+                查看深度评测报告与测速大图
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
+    </div>
+
+    {/* 合规与声明脚注 */}
+    <aside class="mt-16 bg-surface border border-border p-6 text-xs text-muted space-y-2 font-mono">
+      <h3 class="font-bold text-foreground uppercase tracking-tight">网络可观测实验室免责与合规声明</h3>
+      <p>1. 本站收录之42家机场品牌参数及跑分截图均基于特定测试周期之真实环境记录，网络环境具有时效性与波动性，不代表永久在线保证。</p>
+      <p>2. 本页所含外部链接均标注 sponsored / nofollow 属性，可能为本站运维带来微薄返利支持，但绝不影响用户实际支付结算价格与评测客观性。</p>
+      <p>3. 请依法依规使用网络代理技术，严禁用于任何非法网络活动。</p>
+    </aside>
+  </div>
+</Base>
+
+<script is:inline>
+  const buttons = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.brand-card');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => {
+        b.classList.remove('active', 'border-foreground', 'bg-foreground', 'text-background');
+        b.classList.add('border-border', 'bg-surface', 'text-foreground');
+      });
+      btn.classList.add('active', 'border-foreground', 'bg-foreground', 'text-background');
+      btn.classList.remove('border-border', 'bg-surface', 'text-foreground');
+
+      const filter = btn.dataset.filter;
+      cards.forEach(card => {
+        if (filter === 'all') {
+          card.style.display = 'flex';
+        } else if (filter === 'tested') {
+          card.style.display = card.dataset.tested === 'true' ? 'flex' : 'none';
+        } else if (filter === 'iplc') {
+          card.style.display = card.dataset.iplc === 'true' ? 'flex' : 'none';
+        } else if (filter === 'budget') {
+          card.style.display = card.dataset.budget === 'true' ? 'flex' : 'none';
+        } else if (filter === 'ai') {
+          card.style.display = card.dataset.ai === 'true' ? 'flex' : 'none';
+        }
+      });
+    });
+  });
+</script>

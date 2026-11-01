@@ -1,0 +1,73 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Plate from '../components/common/Plate.astro';
+import PlateHead from '../components/common/PlateHead.astro';
+import heroImage from '../assets/sample/lightning-over-the-mole.avif';
+import { site } from '../config';
+
+const pillar = await getEntry('pillars', 'warning');
+const { Content } = pillar ? await render(pillar) : { Content: null };
+
+const siteUrl = Astro.site ?? new URL(site.url);
+const url = (p: string) => new URL(p, siteUrl).href;
+
+const jsonLd = [
+  {
+    '@type': 'Article',
+    headline: '机场跑路预警与避坑红黑榜',
+    description: '5大暴雷前兆雷达、历年典型停服黑名单档案与老牌白名单',
+    url: url('/warning'),
+    author: { '@type': 'Organization', name: site.name },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: url('/') },
+      { '@type': 'ListItem', position: 2, name: '跑路预警', item: url('/warning') },
+    ],
+  },
+];
+---
+
+<Base
+  title="机场跑路预警与避坑红黑榜 · 5大暴雷前兆雷达与安全白名单"
+  description="拒绝资金打水漂与突发失联断网。深度解析机场跑路的经济学根源，发布5大高危暴雷前兆雷达、历年典型停服黑名单档案、30秒跑路紧急抢救流程与5年以上稳健老牌白名单。"
+  image={heroImage}
+  jsonLd={jsonLd}
+>
+  <Plate
+    class="flex min-h-[30rem] flex-col justify-between gap-10 px-4 py-8 sm:min-h-[60vh] sm:py-12"
+    image={heroImage}
+    alt="海港防波堤上空的闪电风暴"
+    credit="Photographic Archive / 极端天气与海岸基建"
+    priority
+  >
+    <div class="max-w-wide mx-auto w-full">
+      <div class="max-w-[32rem]">
+        <h1 class="font-ui text-spot text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.85] font-black tracking-[-0.045em]">
+          跑路预警
+        </h1>
+        <p class="font-ui mt-4 text-[0.9375rem] leading-relaxed" style="color: var(--on-plate-muted)">
+          第三方独立监测与避坑雷达。实时追踪梯子异常前兆，发布停服黑名单档案与老牌稳健白名单。
+        </p>
+      </div>
+    </div>
+    <div class="max-w-wide mx-auto w-full">
+      <PlateHead
+        kicker="第三方独立监督"
+        title="机场跑路预警与避坑红黑榜"
+        deck="揭秘机场资金盘倒挂的经济学真相，发布5大高危暴雷前兆自查雷达，提供30秒应急切换与老牌避风港方案。"
+        as="h2"
+      />
+    </div>
+  </Plate>
+
+  <div class="max-w-article mx-auto px-4 pt-10 sm:pt-14">
+    {Content && (
+      <div class="article-body max-w-content min-w-0">
+        <Content />
+      </div>
+    )}
+  </div>
+</Base>

@@ -1,55 +1,55 @@
 [
   {
-    "id": "linnea-holm",
-    "name": "Linnea Holm",
-    "role": "Editor",
-    "bio": "Linnea Holm edits Halftone. She spent eleven years as a picture editor before taking the masthead.",
+    "id": "lab-lead",
+    "name": "网络实验室测试组",
+    "role": "首席评测编辑",
+    "bio": "负责 vpn免费 平台网络可观测评测标准制定与跨品牌长周期追踪实测。",
     "portrait": "../assets/sample/portrait-linnea-holm.avif",
     "links": [
       {
-        "label": "Email",
-        "href": "mailto:editor@example.com"
+        "label": "联系编辑部",
+        "href": "mailto:editor@vpnmianfei.my"
       }
     ],
     "order": 1
   },
   {
-    "id": "mira-halvorsen",
-    "name": "Mira Halvorsen",
-    "role": "Editor, Power",
-    "bio": "Mira Halvorsen writes about infrastructure, from the transmission grid to the water that cools it.",
+    "id": "iplc-analyst",
+    "name": "专线架构分析员",
+    "role": "专线与网络架构员",
+    "bio": "深耕跨境内网专线（IPLC/IEPL）传输技术与 BGP 智能调度拓扑分析。",
     "portrait": "../assets/sample/portrait-mira-halvorsen.avif",
     "order": 2
   },
   {
-    "id": "dessie-okonkwo",
-    "name": "Dessie Okonkwo",
-    "role": "Correspondent, Ports",
-    "bio": "Dessie Okonkwo reports on freight and the coastline it arrives on. She has filed from fourteen countries for Halftone.",
+    "id": "speed-tester",
+    "name": "节点实测工程师",
+    "role": "晚高峰测速分析员",
+    "bio": "专注多节点并发下行带宽、丢包率与晚高峰抗拥塞性能基准评测。",
     "portrait": "../assets/sample/portrait-dessie-okonkwo.avif",
     "order": 3
   },
   {
-    "id": "rafael-viana",
-    "name": "Rafael Viana",
-    "role": "Correspondent, Transit",
-    "bio": "Rafael Viana covers railways, ferries and the timetables that hold them together.",
+    "id": "client-specialist",
+    "name": "客户端配置专家",
+    "role": "终端协议适配员",
+    "bio": "专注 Clash Verge Rev、v2rayN、Shadowrocket 等多平台客户端订阅规则优化与分流配置。",
     "portrait": "../assets/sample/portrait-rafael-viana.avif",
     "order": 4
   },
   {
-    "id": "soo-jin-pae",
-    "name": "Soo-jin Pae",
-    "role": "Correspondent, Land",
-    "bio": "Soo-jin Pae reports on ground, water and the way both are photographed.",
+    "id": "unlock-auditor",
+    "name": "流媒体与AI审计员",
+    "role": "内容解锁分析员",
+    "bio": "追踪各区域落地原生 IP 对 ChatGPT、Claude、Netflix、YouTube 4K 等高级服务的解锁状态。",
     "portrait": "../assets/sample/portrait-soo-jin-pae.avif",
     "order": 5
   },
   {
-    "id": "arun-pelletier",
-    "name": "Arun Pelletier",
-    "role": "Picture editor",
-    "bio": "Arun Pelletier selects and edits the photography in Halftone. The pictures themselves are credited to their makers on the plate.",
+    "id": "data-archivist",
+    "name": "品牌数据复核员",
+    "role": "品牌档案归档员",
+    "bio": "核验各品牌机场套餐价格、付款周期、优惠码及运营状态真实性，保障数据透明。",
     "portrait": "../assets/sample/portrait-arun-pelletier.avif",
     "order": 6
   }

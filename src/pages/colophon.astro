@@ -1,7 +1,4 @@
 ---
-// Screen D: the colophon. A masthead, how the magazine works, and where to reach it -- the
-// one page here that is all type, which is what keeps it from reading as a fifth desk. The
-// standing text is written in this file on purpose: it is yours to rewrite, not a collection.
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Author from '../components/common/Author.astro';
@@ -10,34 +7,30 @@ import { nav, site } from '../config';
 import { formatDate, getArticles, getDesks } from '../lib/content';
 
 const authors = (await getCollection('authors')).sort((a, b) => a.data.order - b.data.order);
-// A masthead groups by title and keeps the qualifier beside the name: `Editor, Technology`
-// files under Editor and prints `Technology`. An author with no role falls to Contributors.
 const masthead = new Map<string, { author: (typeof authors)[number]; qualifier?: string }[]>();
 for (const author of authors) {
-  const [title, qualifier] = (author.data.role ?? 'Contributors').split(',').map((s) => s.trim());
+  const [title, qualifier] = (author.data.role ?? '特约评测员').split(',').map((s) => s.trim());
   masthead.set(title, [...(masthead.get(title) ?? []), { author, qualifier }]);
 }
 
-// Contact runs off the editor's own links plus whatever config lists socially, so there is
-// no second place to keep an address up to date.
-const editor = authors.find((a) => a.data.name === site.author);
+const editor = authors.find((a) => a.data.name === site.author) ?? authors[0];
 const contacts = [...(editor?.data.links ?? []), ...nav.social];
 
 const articles = await getArticles();
 const desks = await getDesks();
-const since = formatDate(articles[articles.length - 1].data.date);
+const since = formatDate(articles[articles.length - 1]?.data.date ?? new Date());
 ---
 
 <Base
-  title="Colophon"
-  description={`Who makes ${site.name}, how it is reported, and where to write to it.`}
+  title="评测准则与关于我们"
+  description={`了解 ${site.name} 团队的实测方法、数据核验机制与网络可观测实验室评测伦理。`}
 >
   <div class="max-w-content mx-auto px-4 pt-10 sm:pt-16">
     <PageHead
-      kicker="About"
-      title="Colophon"
-      lede={`${site.name} is a magazine about how things are actually run: the budget line, the water truck, the piece of software nobody chose. Every piece is reported in the place it happens and photographed there too.`}
-      folio={`${articles.length} stories · ${desks.length} desks · published since ${since}`}
+      kicker="关于我们"
+      title="网络可观测实验室"
+      lede={`${site.name} 致力于构建透明、可信、真实的全球网络代理与基础设施评测档案库。我们不盲从厂商宣传，依托多地真实宽带探针，持续追踪节点延迟、丢包率、流媒体全区解锁与大语言模型风控通过率。`}
+      folio={`${articles.length} 篇深度报告 · ${desks.length} 大核心专栏 · ${since} 启动追踪`}`
     />
 
     <section class="mt-14 sm:mt-20" aria-labelledby="masthead">
@@ -45,11 +38,11 @@ const since = formatDate(articles[articles.length - 1].data.date);
         id="masthead"
         class="font-ui border-b-2 border-current pb-2 text-base font-extrabold uppercase"
       >
-        Masthead
+        测试团队架构 (Editorial Masthead)
       </h2>
       <dl>
         {[...masthead].map(([title, members]) => (
-          <div class="border-border grid gap-x-8 gap-y-4 border-b py-7 sm:grid-cols-[8rem_1fr]">
+          <div class="border-border grid gap-x-8 gap-y-4 border-b py-7 sm:grid-cols-[10rem_1fr]">
             <dt class="font-mono text-xs font-semibold uppercase">{title}</dt>
             <dd class="space-y-6">
               {members.map(({ author, qualifier }) => (
@@ -66,23 +59,17 @@ const since = formatDate(articles[articles.length - 1].data.date);
         id="how"
         class="font-ui border-b-2 border-current pb-2 text-base font-extrabold uppercase"
       >
-        How we work
+        评测方法与核验准则
       </h2>
       <div class="article-body mt-7">
         <p>
-          A story is assigned when a reporter can get to where it happens and stay long enough to
-          watch the thing work or fail. We do not run pieces written off a press release, and we do
-          not run pieces without pictures.
+          <strong>坚持环境真实与时间透明：</strong> 所有节点测速报告必须标注具体测试时间（特别是晚高峰 20:00 - 23:00）、测试运营商、本地带宽上限及所采用的测速工具，绝不使用未经核实的厂商口头宣称。
         </p>
         <p>
-          Figures printed in the rail beside an article carry their source on the line below them.
-          Where a figure comes from a body that has an interest in it, the line says so. Where we
-          could not confirm a number, it is not in the rail.
+          <strong>数据指标宁缺毋滥：</strong> 侧边数据栏（Rail）所收录的延迟、带宽和丢包率均来自端到端真实探针测试。对于尚未完成全量指标跑分的品牌，明确标记为“待核实”，杜绝模糊推测。
         </p>
         <p>
-          Corrections are made on the page itself, dated, with the original wording kept in the
-          note. A correction that changes what a piece concluded is also printed at the head of the
-          desk it was filed to.
+          <strong>纠错与版本留痕：</strong> 当服务商线路调整、套餐变更或发生故障时，评测团队会在文章与品牌库中同步更新核验日期，并保留历史记录以供回溯。
         </p>
       </div>
     </section>
@@ -92,16 +79,14 @@ const since = formatDate(articles[articles.length - 1].data.date);
         id="pictures"
         class="font-ui border-b-2 border-current pb-2 text-base font-extrabold uppercase"
       >
-        Pictures
+        实测图表与原始证据
       </h2>
       <div class="article-body mt-7">
         <p>
-          Every photograph on this site is credited beside it. Nothing is staged and nothing is
-          composited; adjustments are limited to exposure, contrast and cropping.
+          本站发表的所有节点测速截图、流媒体 RegionRestrictionCheck 解锁报告图及拓扑监控大图，均由测试人员在实际网络环境中直接采集并归档保存。
         </p>
         <p>
-          The pictures in this demo were drawn rather than photographed: generated placeholders
-          standing in for the real thing while the theme is being set up.
+          图表原始文件除添加合规水印外，严禁对数值、测试时间及丢包率进行任何后期合成或修饰，确保每一份报告均具备证据级可信度。
         </p>
       </div>
     </section>
@@ -111,14 +96,12 @@ const since = formatDate(articles[articles.length - 1].data.date);
         id="contact"
         class="font-ui border-b-2 border-current pb-2 text-base font-extrabold uppercase"
       >
-        Contact
+        读者联络与信息勘误
       </h2>
       <div class="article-body mt-7">
         <p>
-          Pitches, corrections and rights enquiries go to the editor, {site.author}. Letters about a
-          piece should name it.
+          若您在使用过程中发现某品牌存在跑路风险、套餐大幅改版或大面积断连，欢迎向编辑部反馈，我们将第一时间复核并更新全网评级。
         </p>
-        {/* Set small, so each row is padded out to a thumb-sized target of its own. */}
         <ul class="font-mono text-xs uppercase">
           {contacts.map((link) => (
             <li>

@@ -1,0 +1,119 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Plate from '../components/common/Plate.astro';
+import PlateHead from '../components/common/PlateHead.astro';
+import heroImage from '../assets/sample/the-platform-built-at-home.avif';
+import { site } from '../config';
+
+const pillar = await getEntry('pillars', 'faq');
+const { Content } = pillar ? await render(pillar) : { Content: null };
+
+const siteUrl = Astro.site ?? new URL(site.url);
+const url = (p: string) => new URL(p, siteUrl).href;
+
+const jsonLd = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: [
+      {
+        '@type': 'Question',
+        name: '为什么 Speedtest 测速跑满几百兆，看 YouTube 或网页依然卡顿？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: '测速软件测试的是几秒钟内的多线程突发吞吐峰值；而视频播放需要持续平稳、低抖动、零丢包的长连接。若丢包率超过3%，播放器会频繁因重传而转圈缓冲。建议选择晚高峰IEPL内网专线品牌。',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '节点列表全部显示 Timeout 超时或延迟为 -1ms 怎么解决？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: '常见原因为系统时间未对齐（误差超过60秒会导致加密握手失败，需同步网络时间）、本地代理端口冲突或订阅链接发生变更需右键刷新。',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '开启 Clash Verge Rev 后国内网站（微信、淘宝、百度）打不开怎么办？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: '请将客户端模式从 Global（全局）修改为 Rule（规则分流），并在设置中开启自动绕过局域网与国内大陆 IP，确保 DNS 为 Fake-IP 模式。',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '为什么用香港节点打不开 ChatGPT 或 Claude？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'OpenAI 官方从未对中国香港地区开放服务，香港 IP 默认在封禁名单中。需切换至新加坡、日本、美国、台湾等原生住宅 IP 专用节点，并在浏览器无痕窗口中重新登录。',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '为什么 Netflix 只能看自制剧（Originals）？怎么看非自制剧？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: 'Netflix 对第三方影视版权实施机房 IP 黑名单扫描。普通中转或机房 IP 会被识别并降级为自制剧库。需选用具备真实本地 ISP 原生住宅 IP 的节点才能解锁完整版权库。',
+        },
+      },
+      {
+        '@type': 'Question',
+        name: '购买机场使用支付宝或微信付款安全吗？会有实名风险吗？',
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: '正规商业机场接入持牌第三方商业发卡平台或跨境支付网关，账单显示合规常规网络服务抬头。切勿向私人微信赞赏码直接转账，防范资金盘暴雷逃逸风险。',
+        },
+      },
+    ],
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: url('/') },
+      { '@type': 'ListItem', position: 2, name: '全科FAQ', item: url('/faq') },
+    ],
+  },
+];
+---
+
+<Base
+  title="科学上网与网络加速全科 FAQ · 100+高频疑难排错全书"
+  description="覆盖连接测速、客户端规则、AI大模型与流媒体解锁、专线底层拓扑、支付与隐私安全5大科室，汇聚100+硬核问答与标准化解决方案。"
+  image={heroImage}
+  jsonLd={jsonLd}
+>
+  <Plate
+    class="flex min-h-[30rem] flex-col justify-between gap-10 px-4 py-8 sm:min-h-[60vh] sm:py-12"
+    image={heroImage}
+    alt="精密工业调度平台"
+    credit="Photographic Archive / 工业自动化调度"
+    priority
+  >
+    <div class="max-w-wide mx-auto w-full">
+      <div class="max-w-[32rem]">
+        <h1 class="font-ui text-spot text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.85] font-black tracking-[-0.045em]">
+          全科FAQ
+        </h1>
+        <p class="font-ui mt-4 text-[0.9375rem] leading-relaxed" style="color: var(--on-plate-muted)">
+          科学上网与网络加速医学级全科诊疗中心。五大专科门诊，100+ 硬核问答与标准排错指南。
+        </p>
+      </div>
+    </div>
+    <div class="max-w-wide mx-auto w-full">
+      <PlateHead
+        kicker="全科疑难百科"
+        title="2026 科学上网与网络加速全科医学百科"
+        deck="覆盖连接测速、客户端规则、AI大模型与流媒体解锁、专线底层拓扑、支付与隐私安全，一站式解决所有出海报错与阻断障碍。"
+        as="h2"
+      />
+    </div>
+  </Plate>
+
+  <div class="max-w-article mx-auto px-4 pt-10 sm:pt-14">
+    {Content && (
+      <div class="article-body max-w-content min-w-0">
+        <Content />
+      </div>
+    )}
+  </div>
+</Base>

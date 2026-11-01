@@ -1,26 +1,26 @@
 [
   {
-    "id": "ports",
-    "name": "Ports",
-    "blurb": "The edge where a country meets its freight: quays, cranes, and the weather that stops them.",
+    "id": "reviews",
+    "name": "精选实测",
+    "blurb": "42家主流机场多维度速度实测、晚高峰延迟与丢包率对比，坚持真实数据与客观记录。",
     "order": 1
   },
   {
-    "id": "transit",
-    "name": "Transit",
-    "blurb": "Rails, platforms and boats, and the timetables that hold them to the minute.",
+    "id": "iplc",
+    "name": "专线与协议",
+    "blurb": "IEPL/IPLC 跨境内网专线原理、VLESS/Trojan/Shadowsocks 协议技术对比与抗封锁架构解析。",
     "order": 2
   },
   {
-    "id": "power",
-    "name": "Power",
-    "blurb": "Where electricity is made and what it is made beside: turbines, transformers, cooling towers.",
+    "id": "clients",
+    "name": "客户端教程",
+    "blurb": "覆盖 Windows、macOS、iOS、Android 全平台代理客户端下载、订阅导入与分流配置实操指南。",
     "order": 3
   },
   {
-    "id": "land",
-    "name": "Land",
-    "blurb": "Ground, water and weather, photographed from close up and from orbit.",
+    "id": "unlock",
+    "name": "AI与流媒体",
+    "blurb": "ChatGPT、Claude、Netflix、YouTube 4K、TikTok 解锁能力全景实测与原生 IP 选点策略。",
     "order": 4
   }
 ]

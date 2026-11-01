@@ -1,0 +1,73 @@
+---
+import { getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Plate from '../components/common/Plate.astro';
+import PlateHead from '../components/common/PlateHead.astro';
+import heroImage from '../assets/sample/kreiensen-1963.avif';
+import { site } from '../config';
+
+const pillar = await getEntry('pillars', 'free');
+const { Content } = pillar ? await render(pillar) : { Content: null };
+
+const siteUrl = Astro.site ?? new URL(site.url);
+const url = (p: string) => new URL(p, siteUrl).href;
+
+const jsonLd = [
+  {
+    '@type': 'Article',
+    headline: '2026 全球科学上网免费资源全景白皮书',
+    description: '安全白嫖通道、开源工具与平价替代选型指南',
+    url: url('/free'),
+    author: { '@type': 'Organization', name: site.name },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: site.name, item: url('/') },
+      { '@type': 'ListItem', position: 2, name: '免费资源', item: url('/free') },
+    ],
+  },
+];
+---
+
+<Base
+  title="免费资源全景白皮书 · 科学上网合规白嫖与避坑指南"
+  description="拒绝恶意黑产陷阱与账号连坐封禁。深度解析 Cloudflare WARP+、学术直连镜像与大厂试用通道，提供免费与专线实测差距大表、选型决策树与平价专线替代。"
+  image={heroImage}
+  jsonLd={jsonLd}
+>
+  <Plate
+    class="flex min-h-[30rem] flex-col justify-between gap-10 px-4 py-8 sm:min-h-[60vh] sm:py-12"
+    image={heroImage}
+    alt="铁路调度枢纽与公共干线网络"
+    credit="Photographic Archive / 交通与通信基础设施"
+    priority
+  >
+    <div class="max-w-wide mx-auto w-full">
+      <div class="max-w-[32rem]">
+        <h1 class="font-ui text-spot text-[clamp(2.5rem,8vw,5.5rem)] leading-[0.85] font-black tracking-[-0.045em]">
+          免费资源
+        </h1>
+        <p class="font-ui mt-4 text-[0.9375rem] leading-relaxed" style="color: var(--on-plate-muted)">
+          安全白嫖合规通道、开源节点工具与平价替代选型指南。拒绝黑产风险，理清免费背后的代价。
+        </p>
+      </div>
+    </div>
+    <div class="max-w-wide mx-auto w-full">
+      <PlateHead
+        kicker="公益安全专题"
+        title="2026 全球科学上网免费资源全景白皮书"
+        deck="深度解析大厂正规免费通道（Cloudflare WARP+）、高校科研镜像与免费节点的封号风险，提供理性出海指南。"
+        as="h2"
+      />
+    </div>
+  </Plate>
+
+  <div class="max-w-article mx-auto px-4 pt-10 sm:pt-14">
+    {Content && (
+      <div class="article-body max-w-content min-w-0">
+        <Content />
+      </div>
+    )}
+  </div>
+</Base>

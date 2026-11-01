@@ -1,8 +1,5 @@
 ---
-// The article rail: the blocks the piece asked for, in the order it asked for them, then what
-// else the desk has filed. It is a column beside the body only from 64rem up, and only where
-// the page asked for one; everywhere else it prints under the body, which is why the figures
-// are a description list and not a boxed sidebar.
+// The article rail: figures, affiliate conversion card, and related reading from the desk.
 import type { Article, Item } from '../../lib/content';
 import { site } from '../../config';
 import { t } from '../../i18n';
@@ -12,13 +9,13 @@ interface Props {
   more: Item[];
   desk: string;
   deskHref: string;
-  // The body has a column reserved for it from 64rem up.
   beside?: boolean;
 }
 const { blocks = [], more, desk, deskHref, beside = false } = Astro.props;
 const ui = t(Astro.currentLocale ?? site.locale);
 
 const stats = blocks.filter((block) => block.kind === 'stat');
+const ctas = blocks.filter((block) => block.kind === 'cta');
 ---
 
 <aside
@@ -28,6 +25,35 @@ const stats = blocks.filter((block) => block.kind === 'stat');
   ]}
 >
   <div class="space-y-10">
+    {ctas.length > 0 && (
+      <section aria-labelledby="rail-cta" class="bg-surface border-border border p-5">
+        <h2 id="rail-cta" class="font-ui text-sm font-extrabold uppercase tracking-tight">
+          {ctas[0].title}
+        </h2>
+        {ctas[0].coupon && (
+          <div class="mt-3 flex items-center justify-between border-t border-dashed border-border pt-3">
+            <span class="font-mono text-xs text-muted">专属优惠码</span>
+            <code class="bg-background border-border border px-2 py-0.5 font-mono text-xs font-bold text-primary">
+              {ctas[0].coupon}
+            </code>
+          </div>
+        )}
+        <a
+          href={ctas[0].href}
+          target="_blank"
+          rel="nofollow sponsored noopener"
+          class="bg-primary text-on-primary hover:bg-primary-hover mt-4 flex w-full items-center justify-center py-2.5 font-ui text-sm font-bold no-underline transition-colors"
+        >
+          {ctas[0].label} &rarr;
+        </a>
+        {ctas[0].note && (
+          <p class="text-muted mt-2 font-mono text-[0.625rem] leading-snug text-center">
+            {ctas[0].note}
+          </p>
+        )}
+      </section>
+    )}
+
     {stats.length > 0 && (
       <section aria-labelledby="rail-figures">
         <h2

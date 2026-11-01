@@ -1,7 +1,7 @@
 ---
 // All <head> meta. Pages pass title and description (plus image, type, jsonLd when needed) to Base.astro.
 import type { ImageMetadata } from 'astro';
-import { seo, site } from '../../config';
+import { seo, site, verification } from '../../config';
 import { cardSize, shareCard } from '../../lib/content';
 
 interface Props {
@@ -11,6 +11,11 @@ interface Props {
   // a path to a card already sitting in public/.
   image?: string | ImageMetadata;
   type?: 'website' | 'article';
+  publishedTime?: string;
+  modifiedTime?: string;
+  author?: string;
+  section?: string;
+  tags?: readonly string[];
   jsonLd?: Record<string, unknown>[]; // per-page additions such as BlogPosting and BreadcrumbList
   noindex?: boolean;
 }
@@ -19,14 +24,20 @@ const {
   description = site.description,
   image = site.defaultOgImage,
   type = 'website',
+  publishedTime,
+  modifiedTime,
+  author,
+  section,
+  tags = [],
   jsonLd = [],
   noindex = false,
 } = Astro.props;
 
 const fullTitle = title ? seo.titleTemplate.replace('%s', title) : site.name;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(typeof image === 'string' ? image : await shareCard(image), Astro.site);
-const home = new URL('/', Astro.site).href;
+const siteUrl = Astro.site ?? new URL(site.url);
+const canonical = new URL(Astro.url.pathname, siteUrl);
+const ogImage = new URL(typeof image === 'string' ? image : await shareCard(image), siteUrl);
+const home = new URL('/', siteUrl).href;
 const locale = Astro.currentLocale ?? site.locale;
 
 const schema = [
@@ -37,7 +48,15 @@ const schema = [
     description: site.description,
     url: home,
     inLanguage: locale,
-    publisher: { '@type': seo.jsonLd.type, name: seo.jsonLd.name, url: home },
+    publisher: {
+      '@type': seo.jsonLd.type,
+      name: seo.jsonLd.name,
+      url: home,
+      logo: {
+        '@type': 'ImageObject',
+        url: new URL('/favicon.svg', siteUrl).href,
+      },
+    },
   },
   ...jsonLd.map((d) => ({ '@context': 'https://schema.org', ...d })),
 ];
@@ -47,24 +66,50 @@ const schemaJson = JSON.stringify(schema).replace(/</g, '\\u003c');
 
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
-{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
-<link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+{noindex ? (
+  <meta name="robots" content="noindex, nofollow" />
+) : (
+  <>
+    <link rel="canonical" href={canonical.href} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  </>
+)}
+<link rel="alternate" type="application/rss+xml" title={site.name} href={new URL('/rss.xml', siteUrl).href} />
+<link rel="sitemap" href={new URL('/sitemap.xml', siteUrl).href} />
+<link rel="sitemap" href={new URL('/sitemap-index.xml', siteUrl).href} />
+
+{/* 搜索引擎站长平台所有权验证 (安全预留，按需配置环境变量注入或直接设置) */}
+{verification.google && <meta name="google-site-verification" content={verification.google} />}
+{verification.bing && <meta name="msvalidate.01" content={verification.bing} />}
+{verification.shenma && <meta name="shenma-site-verification" content={verification.shenma} />}
+{verification.baidu && <meta name="baidu-site-verification" content={verification.baidu} />}
 
 <meta property="og:type" content={type} />
 <meta property="og:site_name" content={site.name} />
 <meta property="og:locale" content={locale} />
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
-<meta property="og:url" content={canonical} />
-<meta property="og:image" content={ogImage} />
+<meta property="og:url" content={canonical.href} />
+<meta property="og:image" content={ogImage.href} />
 <meta property="og:image:width" content={String(cardSize.width)} />
 <meta property="og:image:height" content={String(cardSize.height)} />
+<meta property="og:image:alt" content={title || site.name} />
+
+{type === 'article' && (
+  <>
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+    {author && <meta property="article:author" content={author} />}
+    {section && <meta property="article:section" content={section} />}
+    {tags.map((t) => <meta property="article:tag" content={t} />)}
+  </>
+)}
 
 <meta name="twitter:card" content="summary_large_image" />
 {seo.twitterHandle && <meta name="twitter:site" content={seo.twitterHandle} />}
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
-<meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image" content={ogImage.href} />
+<meta name="twitter:image:alt" content={title || site.name} />
 
 <script is:inline type="application/ld+json" set:html={schemaJson}></script>

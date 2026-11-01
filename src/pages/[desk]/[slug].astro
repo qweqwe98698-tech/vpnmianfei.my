@@ -11,7 +11,7 @@ import Plate from '../../components/common/Plate.astro';
 import PlateHead from '../../components/common/PlateHead.astro';
 import Rail from '../../components/article/Rail.astro';
 import Rundown from '../../components/article/Rundown.astro';
-import { blog, site } from '../../config';
+import { blog, seo, site } from '../../config';
 import {
   deskHref,
   getArticles,
@@ -58,17 +58,37 @@ const reading = related(
 const shell = beside ? 'max-w-article' : 'max-w-content';
 const standfirst = item.data.standfirst ?? item.data.deck;
 const href = deskHref(item.desk.id);
-const url = (path: string) => new URL(path, Astro.site).href;
+const siteUrl = Astro.site ?? new URL(site.url);
+const url = (path: string) => new URL(path, siteUrl).href;
 
 const jsonLd = [
   {
     '@type': 'NewsArticle',
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': url(Astro.url.pathname),
+    },
     headline: item.data.title,
     description: standfirst,
     datePublished: item.data.date.toISOString(),
+    dateModified: item.data.date.toISOString(),
     image: url(await shareCard(item.data.hero)),
-    author: authors.map((author) => ({ '@type': 'Person', name: author.data.name })),
+    author: authors.map((author) => ({
+      '@type': 'Person',
+      name: author.data.name,
+      url: url('/colophon'),
+    })),
+    publisher: {
+      '@type': seo.jsonLd.type,
+      name: seo.jsonLd.name,
+      url: url('/'),
+      logo: {
+        '@type': 'ImageObject',
+        url: url('/favicon.svg'),
+      },
+    },
     articleSection: item.desk.data.name,
+    inLanguage: locale,
     ...(item.data.tags && { keywords: item.data.tags.join(', ') }),
   },
   {
@@ -76,7 +96,7 @@ const jsonLd = [
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: site.name, item: url('/') },
       { '@type': 'ListItem', position: 2, name: item.desk.data.name, item: url(href) },
-      { '@type': 'ListItem', position: 3, name: item.data.title },
+      { '@type': 'ListItem', position: 3, name: item.data.title, item: url(Astro.url.pathname) },
     ],
   },
 ];
@@ -87,6 +107,11 @@ const jsonLd = [
   description={standfirst}
   image={item.data.hero}
   type="article"
+  publishedTime={item.data.date.toISOString()}
+  modifiedTime={item.data.date.toISOString()}
+  author={authors.map((a) => a.data.name).join(', ')}
+  section={item.desk.data.name}
+  tags={item.data.tags ?? []}
   jsonLd={jsonLd}
 >
   {essay ? (

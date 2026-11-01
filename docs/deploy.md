@@ -53,7 +53,7 @@ find dist -name '*.woff2' -size -1k    # should print nothing
 
 ## Your own repository
 
-Hosts build from a Git repository you own. `pnpm create astro --template ondelva/astro-theme-halftone`
+Hosts build from a Git repository you own. Initialize your repository:
 gives you the files with no Git history, so start one:
 
 ```sh

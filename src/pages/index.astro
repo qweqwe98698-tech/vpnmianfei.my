@@ -7,6 +7,7 @@ import Plate from '../components/common/Plate.astro';
 import CoverLines from '../components/common/CoverLines.astro';
 import PlateHead from '../components/common/PlateHead.astro';
 import Card from '../components/article/Card.astro';
+import { getEntry, render } from 'astro:content';
 import { coverLines, site } from '../config';
 import { deskHref, deskSpan, getArticles, getDesks, presentAll } from '../lib/content';
 import { t } from '../i18n';
@@ -35,6 +36,10 @@ for (const desk of await getDesks()) {
 
 const essay = items.find((i) => i.data.format === 'photoessay' && !printed.has(i.href));
 const ui = t(Astro.currentLocale ?? site.locale);
+
+const homePillar = await getEntry('pillars', 'home');
+const homeRender = homePillar ? await render(homePillar) : null;
+const HomePillarContent = homeRender ? homeRender.Content : null;
 ---
 
 <Base nameplate={false} description={site.description} image={lead?.data.hero}>
@@ -128,6 +133,13 @@ const ui = t(Astro.currentLocale ?? site.locale);
           />
         </div>
       </Plate>
+    </section>
+  )}
+  {HomePillarContent && (
+    <section class="max-w-article mx-auto mt-20 border-t-2 border-current px-4 pt-14 sm:mt-28" aria-label="全景选型白皮书">
+      <div class="article-body max-w-content min-w-0">
+        <HomePillarContent />
+      </div>
     </section>
   )}
 </Base>
